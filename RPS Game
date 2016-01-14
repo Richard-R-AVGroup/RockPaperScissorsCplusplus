@@ -1,0 +1,428 @@
+/*
+Console Application
+*/
+
+#include <iostream>
+#include <ctime>
+#include <string>
+#include <sstream>
+#include <iomanip>
+
+using namespace std;
+
+enum objectType { ROCK, PAPER, SCISSORS };
+
+// prototype for displayMenu
+void displayMenu();
+// prototype for displayRules function
+void displayRules();
+// prototype for displayResults function 
+void displayResults(int gCount, int wCount1, int wCount2);
+// prototype for endgame
+int endGame(char response);
+// prototype gameState
+int validGameState(int dec);
+// prototype for retrievePlay function
+objectType retrievePlay(char selection);
+// prototype for validSelection function
+bool validSelection(char selection);
+// prototype for convertEnum function 
+void convertEnum(objectType object);
+// prototype for winningObject function 
+objectType winningObject(objectType play1, objectType play2);
+// prototype for gameResult function 
+void gameResult(objectType play1, objectType play2, int& winner);
+// prototype for ai to choose a random number
+int aiDecision(int randomn);
+// prototype ai's decision converted to enumerater
+objectType retrieveAi(int aiSelection);
+// prototype ai's decision in words
+void aiChoose(int randn);
+// prototype for the man game menu
+void gameMenu();
+
+int main()
+{
+	///Integers
+
+	int gameCount;     //games played
+	int winCount1;     //use to store players wins
+	int winCount2;     // use to store the computers wins
+	int gamewinner;    // who the game winner is
+	int randn;         // ai's random number decision
+	int gameState;     // main loop
+	int decision;      // gamestate variable
+	string playerName; // playersname
+	
+	///Characters
+	
+	char response;   // to get user input
+	char selection1; // to get players menu input
+
+	///Objects
+
+	objectType play1;  //player1's selection
+	objectType play2;  //player2's selection
+
+	///Initialize variables
+
+	gameCount = 0; // game couter
+	winCount1 = 0; // player win counter
+	winCount2 = 0; // computer win counter
+	randn = 0;     // Ai's random number
+
+	///Input && gamestate
+	gameState = 0; // main loop and/or exit
+	decision = 2;  // game navigation
+		
+	// Menu
+	while (gameState == 0)
+	{
+		system("cls");
+		while (decision == 0) 
+		{
+			cout << "********************************************************************************" << endl;
+			cout << "              Welcome to the game of Rock, Paper, "
+				<< "and Scissors." << endl << endl
+				<< endl;
+			cout << "Current User: " << playerName << endl;
+			displayMenu();
+			cout << "Enter your decision: ";
+			cin >> decision;
+			cout << endl;
+			cin.ignore();
+
+			cout << "----------------------------------------" << endl;
+			if (validGameState(decision))
+			{
+				decision = validGameState(decision);
+			}
+			if (decision == 3)
+			{
+				gameState = 1;
+			}
+		}
+		// Game
+		while (decision == 1)
+		{
+			// Clear the screen
+			system("cls");
+			// Display the Rules
+			displayRules();
+
+			// Player Selection
+			cout << "----------------------------------------" << endl
+				<< endl;
+			cout << playerName << " enter your choice: ";
+			cin >> selection1;
+			cout << endl;
+
+			// Ai Selection
+			randn = aiDecision(randn);
+			cout << endl << "Computers Choice: ";
+			aiChoose(randn);
+			cout << endl << endl;
+			cout << "----------------------------------------";
+			cout << endl << endl;
+
+			if (validSelection(selection1))
+			{
+				play1 = retrievePlay(selection1);
+				play2 = retrieveAi(randn);
+				gameCount++;
+				gameResult(play1, play2, gamewinner);
+
+				if (gamewinner == 1)
+				{
+					winCount1++;
+				}
+				else if (gamewinner == 2)
+					winCount2++;
+			}
+			displayResults(gameCount, winCount1,//Endgame message
+				winCount2);
+			cout << endl << endl;
+			cout << "Enter Y/y to play the game or any other to exit : ";
+			cin >> response;
+			cout << endl;
+			if (response == 'N' || response == 'n')
+			{
+				decision = 0;
+				cout << decision << endl;;
+			}
+			if (response == 'Y' || response == 'y')
+			{
+				decision = 1;
+				cout << decision << endl;
+			}
+		}
+
+		if (decision == 2)
+		{
+			system("cls");
+			cout << "Please Enter Your Name: ";
+			cin >> playerName;
+			system("cls");
+			cout << "Your name is " << playerName << " correct?" << endl;
+			cout << "Y/y for yes or N/n for no" << endl;
+			cin >> response;
+			if (response == 'y' || response == 'Y')
+			{
+				decision = 0;
+			}
+			else
+			{
+				decision = 2;
+			}
+		}
+	}
+	// quitgame
+	if (gameState == 1)
+	{
+		if (decision == 3)
+		{
+			return 0;
+		}
+	}
+}//end main
+
+
+
+void displayRules()
+{
+
+
+	cout << " The rules for winning the game are: " << endl;
+	cout << "1. If both players selects the same object, it "
+		<< "is a tie." << endl;
+	cout << "2. Rock breaks Scissors: So player who selects "
+		<< "Rock wins." << endl;
+	cout << "3. Paper covers Rock: So player who selects "
+		<< "Paper wins." << endl;
+	cout << "4. Scissors cuts Paper: So player who selects "
+		<< "Scissors wins." << endl << endl;
+	cout << "Enter R or r to select Rock, P or p to select "
+		<< "Paper, and S or s to select" << endl << "Scissors." << endl;
+}
+
+void displayMenu()
+{
+	cout << "Please Choose an option using the appropriate number" << endl
+		<< endl;
+	cout << "1. Play Game against a computer" << endl;
+	cout << "2. Change Name" << endl;
+	cout << "3. Exit" << endl << endl;
+
+
+}
+
+bool validSelection(char selection)
+{
+	switch (selection)
+	{
+	case 'r':
+	case 'R':
+	case 'p':
+	case 'P':
+	case 's':
+	case 'S':
+		return true;
+	default:
+		return false;
+	}
+}
+
+int validGameState(int dec)
+{
+	switch (dec)
+	{
+	case 0:
+		return 0;
+		break;
+	case 1:
+		return 1;
+		break;
+	case 2:
+		return 2;
+		break;
+	case 3:
+		return 3;
+		break;
+	case 4:
+		return 4;
+		break;
+	default:
+		return 0;
+		break;
+
+	}
+}
+
+objectType retrievePlay(char selection)
+{
+	objectType object;
+
+	switch (selection)
+	{
+	case 'R':
+	case 'r':
+		object = ROCK;
+		break;
+	case 'P':
+	case 'p':
+		object = PAPER;
+		break;
+	case 'S':
+	case 's':
+		object = SCISSORS;
+	}
+
+	return object;
+}
+
+int endGame(char response)
+{
+	switch (response)
+	{
+	case 'Y':
+	case 'y':
+		return 1;
+		break;
+	case 'n':
+	case 'N':
+		return 0;
+	}
+
+	return response;
+}
+
+void convertEnum(objectType object)
+{
+	switch (object)
+	{
+	case ROCK:
+		cout << "Rock";
+		break;
+	case PAPER:
+		cout << "Paper";
+		break;
+	case SCISSORS:
+		cout << "Scissors";
+	}
+}
+
+objectType winningObject(objectType play1, objectType play2)
+{
+	if ((play1 == ROCK && play2 == SCISSORS)
+		|| (play2 == ROCK && play1 == SCISSORS))
+		return ROCK;
+	else if ((play1 == ROCK && play2 == PAPER)
+		|| (play2 == ROCK && play1 == PAPER))
+		return PAPER;
+	else if ((play1 == SCISSORS && play2 == PAPER)
+		|| (play2 == SCISSORS && play1 == PAPER))
+		return SCISSORS;
+}
+
+void gameResult(objectType play1, objectType play2,
+	int& winner)
+{
+	objectType winnerObject;
+
+	if (play1 == play2)
+	{
+		winner = 0;
+		cout << "Both players selected ";
+		convertEnum(play1);
+		cout << ". This game is a tie." << endl;
+	}
+	else
+	{
+		winnerObject = winningObject(play1, play2);
+
+		//Output each player's choice
+		cout << "You selected ";
+		convertEnum(play1);
+		cout << " and Computer selected ";
+		convertEnum(play2);
+		cout << ". ";
+		cout << endl;
+
+		//Decide the winner
+		if (play1 == winnerObject)
+			winner = 1;
+		else if (play2 == winnerObject)
+			winner = 2;
+
+		//Output the winner
+		if (winner == 1)
+		{
+			cout << "You " << "win this game."
+				<< endl;
+		}
+		if (winner == 2)
+		{
+			cout << "The Computer wins this game" << endl;
+		}
+	}
+}
+
+void displayResults(int gCount, int totalWon, int wCount2)
+{
+	cout << "The total number of plays: " << gCount
+		<< endl;
+	cout << "The number of plays won by player 1: "
+		<< totalWon << endl;
+	cout << "The number of plays won by Computer: "
+		<< wCount2 << endl;
+}
+
+int aiDecision(int randomn)
+{
+	int number;
+	srand(time(0));
+	do
+	{
+		number = rand() % 3;
+		randomn = number;
+	} while (number != randomn);
+
+	return randomn;
+}
+
+objectType retrieveAi(int randn)
+{
+	objectType object;
+
+	switch (randn)
+	{
+	case 0:
+		object = ROCK;
+		break;
+	case 1:
+		object = PAPER;
+		break;
+	case 2:
+		object = SCISSORS;
+		break;
+
+	}
+	return object;
+
+}
+
+void aiChoose(int randn)
+{
+	switch (randn)
+	{
+	case 0:
+		cout << "Rock";
+		break;
+	case 1:
+		cout << "Paper";
+		break;
+	case 2:
+		cout << "Scissors";
+		break;
+	}
+}
